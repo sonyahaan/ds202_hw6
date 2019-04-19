@@ -1,0 +1,18 @@
+---
+title: "hw6.Rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**contained in "best in show"**
+Type of dog is called "category"
+size of dog is in column AT called "size"
+
+**contained in "best in show full sheet"** 
+data score is in 
+use either of the popularity column (see which one is better)
+
+use an arrow for points because points don't allow us to utilize orientation
