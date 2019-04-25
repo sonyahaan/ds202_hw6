@@ -5,14 +5,43 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+```
+(@) Import the data and clean appropriately. To read in the data, you can use readxl::read_xlsx('fileNameHere', sheet='sheetNameHere'). Required data are in the sheets Best in show and Best in show full sheet. Take extra care on the column names and the first few rows of the data frame after read in.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+best <- readxl::read_xlsx("KIB - Best in Show (public).xlsx", sheet="Best in show full sheet")
+colnames(best) = best[2, ]
+best <- best[-(1:3), c(1,3,5,7,41,32)]
+names(best) <- c("breed", "type", "score", "popularity", "intelligence", "size")
+best$type <- factor(best$type)
+best$score <- as.numeric(best$score)
+best$popularity <- as.numeric(best$popularity)
+best$intelligence <- factor(best$intelligence)
+best$size <- factor(best$size)
+best <- na.omit(best)
 ```
 
-**contained in "best in show"**
-Type of dog is called "category"
-size of dog is in column AT called "size"
+(@) Create a graphics similar to the top dogs figure. Your figure need to display the following information with appropriate plotting elements:
 
-**contained in "best in show full sheet"** 
-data score is in 
-use either of the popularity column (see which one is better)
+breed of dog
+type of dog (work, toy, etc.)
+size of dog
+data score
+popularity
+intelligence of the dog
+appropriate legends & explanation
 
-use an arrow for points because points don't allow us to utilize orientation
+Hints and Notes:
+The breed of dog can be displayed without the silhouttes (text only is fine)
+Avoid (too much) overlap!
+Choose a good color scheme.
+
+```{r}
+best <- best %>% mutate(smart = ifelse(intelligence %in% c("Above average", "Brightest", "Excellent"), TRUE, FALSE))
+cols <- c("#0065ab", "#f04e8e", "#ec2121", "#c9b525", "#13650a", "#80017c", "#393a3c")
+p <- best %>% ggplot(aes(x=score, y=popularity, size=size)) + geom_point(aes(shape=smart, color=type)) 
+p + scale_shape_manual(values=c(60, 62)) + scale_color_manual(values=cols) + scale_size_manual(values=c(11,8,5)) + theme_bw() + geom_text(aes(x=score, y=popularity, label=breed,color=type, vjust=2), size=3.5) + scale_y_reverse() + xlim(0.98, 3.65) + guides(colour = guide_legend(override.aes = list(size=5))) + guides(shape = guide_legend(override.aes = list(size=5))) + ggtitle("Best in Show: The Ultimate Dog Data") + xlab("our data score") + theme(legend.position="top") + annotate("text", x = 1.1, y = 90, label = "The Rightly Ignored") + annotate("text", x = 1.1, y = 0, label = "Inexplicably Overrated") + annotate("text", x = 3.55, y = 90, label = "Overlooked Treasures") + annotate("text", x =3.6, y = 0, label = "Hot Dogs!")
+```
